@@ -14,7 +14,9 @@ public class Field {
         this.height = height;
         this.tiles = new Tile[width * height];
 
-        int[] bombIndices = ranInt(0, width * height, initNumBombs);
+        ArrayList<Integer> pool = new ArrayList<>(width * height);
+        for(int i = 0; i < width * height; i++) pool.add(i);
+        int[] bombIndices = ranInt(pool, initNumBombs);
         Arrays.sort(bombIndices);
         for(int i = 0, bombIndex = 0; i < width * height; i++){
             if(i == bombIndices[bombIndex]){
@@ -104,25 +106,20 @@ public class Field {
         }
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
-    private int[] ranInt(int min, int max, int numOfPulls){
-        if(max + 1 - min <= 0){
-            Debugger.warning("cant ask for random number between min: " + min + " and max: " + max);
-        }else if(max + 1 - min < numOfPulls){
-            Debugger.warning("cant ask for more numbers than there are in the Pool min: " + min + " max: " + max + " num of pulls: " + numOfPulls);
+    private int[] ranInt(ArrayList<Integer> pool, int numOfPulls){
+        Debugger.info("pulling " + numOfPulls + " numbers from a pool of " + pool.size() + " numbers");
+        if(numOfPulls > pool.size()){
+            Debugger.warning("cant ask for more numbers than there are in the pool pool size: " + pool.size() + " pulls: " + numOfPulls);
+            throw new IllegalArgumentException("more pull requests than numbers in the pool");
         }
 
-        ArrayList<Integer> pool = new ArrayList<>();
-        for(int i = min; i <= max; i++){
-            pool.add(i);
+        int[] ranNumbers = new int[numOfPulls];
+        for(int i = 0, numIndex; i < numOfPulls; i++){
+            numIndex = ranInt(0, pool.size() - 1);
+            ranNumbers[i] = pool.get(numIndex);
+            pool.remove(numIndex);
         }
-
-        int[] result = new int[numOfPulls];
-        for(int i = 0; i < numOfPulls; i++){
-            int rndNum = ranInt(0, pool.size() - 1);
-            result[i] = rndNum;
-            pool.remove(rndNum);
-        }
-        return result;
+        return ranNumbers;
     }
 }
 
