@@ -14,8 +14,8 @@ public class Tile {
     protected boolean getIsBomb(){
         return bomb;
     }
-    protected void setDiscovered(boolean isDiscovered){
-        this.isDiscovered = isDiscovered;
+    protected void discover(){
+        this.isDiscovered = true;
     }
     protected boolean getDiscovered(){
         return isDiscovered;

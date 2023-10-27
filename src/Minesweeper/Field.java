@@ -30,8 +30,37 @@ public class Field {
         Debugger.info("completed Field initialization");
     }
 
+    protected void discoverTile(int x,  int y){
+        Tile tile = getTile(x, y);
+        if(tile == null){
+            Debugger.warning("could not discover Tile (" + x + "/" + y + ")");
+            return;
+        }
+        if(!tile.getDiscovered()){
+            tile.discover();
+            Debugger.info("Tile (" + x + "/" + y + ") discovered");
+        }else{
+            Debugger.info("cant discover Tile (" + x + "/" + y +") because it is already discovered");
+        }
+    }
+
+    protected void flagTile(int x, int y){
+        Tile tile = getTile(x, y);
+        if(tile == null){
+            Debugger.warning("could not change flag of Tile (" + x + "/" + y +")");
+            return;
+        }
+        if(!tile.getIsFlagged()){
+            Debugger.info("flagging Tile (" + x + "/" + y + ")");
+            tile.setFlag(true);
+        }else{
+            Debugger.info("unflagging Tile (" + x + "/" + y + ")");
+            tile.setFlag(true);
+        }
+    }
+
     protected int getNeighbourBombCount(int x, int y){
-        Debugger.info("checking neighbour bomb number of x: " + x + " y: " + y);
+        Debugger.info("checking neighbour bomb number of Tile (" + x + "/" + y + ")");
         Tile[] neighbours = getNeighbours(x, y);
         int bombCount = 0;
         for(Tile neighbour : neighbours){
@@ -42,7 +71,7 @@ public class Field {
         return bombCount;
     }
     private Tile[] getNeighbours(int x, int y){
-        Debugger.info("getting Neighbours of Tile x: " + x + " y: " + y);
+        Debugger.info("getting Neighbours of Tile (" + x + "/" + y + ")");
         Tile[] neighbours = new Tile[8];
         int[] coord = new int[2];
         for(int i = 0; i < 8; i++){
@@ -80,11 +109,7 @@ public class Field {
                     coord[1] = y + 1;
                 }
             }
-            if(coord[0] < 0 || coord[1] < 0 || coord[0] >= width || coord[1] >= height){
-                neighbours[i] = null;
-            }else{
-                neighbours[i] = getTile(coord[0], coord[1]);
-            }
+            neighbours[i] = getTile(coord[0], coord[1]);
         }
         return neighbours;
     }
@@ -94,15 +119,16 @@ public class Field {
         else return tile.getIsBomb();
     }
     private Tile getTile(int x, int y){
-        if(x < 0 || x > width - 1 || y < 0 || y > height - 1){
-            throw new IndexOutOfBoundsException("cant request tile which is out of bounce x: " + x + " y: " + y);
+        if(x < 0 || x >= width - 1 || y < 0 || y >= height - 1){
+            Debugger.warning("the requested Tile (" + x + "/" + y + ") is out of bounce");
+            return null;
         }
         return (tiles[x + y * width]);
     }
 
     private int ranInt(int min, int max) {
         if(max + 1 - min <= 0){
-            Debugger.warning("cant ask for random number between min: " + min + " and max: " + max);
+            Debugger.warning("cant ask for random number between " + min + " and " + max);
         }
         return ThreadLocalRandom.current().nextInt(min, max + 1);
     }
