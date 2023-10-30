@@ -1,8 +1,16 @@
 package Minesweeper;
 
+import java.awt.*;
+
 public class Minesweeper {
 
+    private Gui gui;
+
     public void startGui(){
-        Gui gui = new Gui();
+        gui = new Gui();
+    }
+
+    public Dimension windowSize(){
+        return gui.windowSize();
     }
 }
