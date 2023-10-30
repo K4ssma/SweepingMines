@@ -17,9 +17,11 @@ public class Gui {
     private final JLabel bombCountLabel;
     private final  JCheckBoxMenuItem menuItemBeginner, menuItemIntermediate, menuItemExpert;
     private final int TILEDIM = 25;
-    private final Difficulty BEGINNER = new Difficulty(new Dimension(8, 8), 10);
-    private final Difficulty INTERMEDIATE = new Difficulty(new Dimension(16, 16), 40);
-    private final Difficulty EXPERT = new Difficulty(new Dimension(30, 16), 99);
+    private final Difficulty BEGINNER = new Difficulty("Beginner", new Dimension(8, 8), 10);
+    private final Difficulty INTERMEDIATE = new Difficulty("Intermediate", new Dimension(16, 16), 40);
+    private final Difficulty EXPERT = new Difficulty("Expert", new Dimension(30, 16), 99);
+    private final Difficulty STANDARDDIFFICULTY = INTERMEDIATE;
+    private Difficulty currentDifficulty;
 
     protected Gui(){
         Debugger.info("starting Game window");
@@ -53,11 +55,17 @@ public class Gui {
         menuBar = new JMenuBar();
         difficultyMenu = new JMenu("Difficulty");
         menuBar.add(difficultyMenu);
+
         menuItemBeginner = new JCheckBoxMenuItem("Beginner", false);
-        menuItemIntermediate = new JCheckBoxMenuItem("Intermediate", true);
-        menuItemExpert = new JCheckBoxMenuItem("Expert", false);
+        menuItemBeginner.addActionListener(new DifficultyActionListener(BEGINNER, this));
         difficultyMenu.add(menuItemBeginner);
+
+        menuItemIntermediate = new JCheckBoxMenuItem("Intermediate", true);
+        menuItemIntermediate.addActionListener(new DifficultyActionListener(INTERMEDIATE, this));
         difficultyMenu.add(menuItemIntermediate);
+
+        menuItemExpert = new JCheckBoxMenuItem("Expert", false);
+        menuItemExpert.addActionListener(new DifficultyActionListener(EXPERT, this));
         difficultyMenu.add(menuItemExpert);
 
         //Adding Components to the GameWindow
@@ -70,13 +78,16 @@ public class Gui {
         playGround.add(mineField);
         window.add(BorderLayout.CENTER, playGround);
 
-        initGUI(INTERMEDIATE);
+        initGUI(STANDARDDIFFICULTY);
 
         window.pack();
         window.setVisible(true);
+        Debugger.info("Game window started");
     }
 
     private void initGUI(Difficulty difficulty){
+        Debugger.info("generating GUI with difficulty: " + difficulty.name);
+
         window.setVisible(false);
         GridBagConstraints constraints = new GridBagConstraints();
         constraints.gridx = 0;
@@ -91,12 +102,46 @@ public class Gui {
         for(int i = 0; i < guiTiles.length; i++){
             guiTiles[i] = new JButton();
             guiTiles[i].setPreferredSize(new Dimension(TILEDIM, TILEDIM));
+            guiTiles[i].addActionListener(new TileActionListener(i, this));
             constraints.gridx = i % difficulty.dimension.width;
             constraints.gridy = (i - (i % difficulty.dimension.width)) + 3;
             mineField.add(guiTiles[i], constraints);
         }
 
+        currentDifficulty = difficulty;
+        window.pack();
         window.setVisible(true);
+
+        Debugger.info("GUI updated");
+    }
+
+    protected void changeDifficulty(Difficulty difficulty){
+        Debugger.info("changing the difficulty from: " + currentDifficulty + " to " + difficulty.name);
+
+        switch(currentDifficulty.name){
+            case "Beginner" -> menuItemBeginner.setState(false);
+            case "Intermediate" -> menuItemIntermediate.setState(false);
+            case "Expert" -> menuItemExpert.setState(false);
+            default -> {
+                Debugger.warning("dont know how to change away from current difficulty: " + currentDifficulty.name);
+                return;
+            }
+        }
+
+        switch(difficulty.name){
+            case "Beginner" ->
+                initGUI(BEGINNER);
+            case "Intermediate" ->
+                initGUI(INTERMEDIATE);
+            case "Expert" ->
+                initGUI(EXPERT);
+            default ->
+                Debugger.warning("couldnt find difficulty with name: " + difficulty.name);
+        }
+    }
+
+    protected void triggerField(int i){
+
     }
 
     public Dimension windowSize(){
