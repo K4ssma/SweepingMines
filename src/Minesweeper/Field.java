@@ -1,24 +1,24 @@
 package Minesweeper;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Field {
-    private final int width, height;
+    private final Dimension dimension;
     private final Tile[] tiles;
 
-    protected Field(int width, int height, int initNumBombs){
-        Debugger.info("creating new field width: " + width + " height: " + height + " number of Bombs: " + initNumBombs);
-        this.width = width;
-        this.height = height;
-        this.tiles = new Tile[width * height];
+    protected Field(Dimension dimension, int initNumBombs){
+        Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initNumBombs);
+        this.dimension = dimension;
+        this.tiles = new Tile[dimension.width * dimension.height];
 
-        ArrayList<Integer> pool = new ArrayList<>(width * height);
-        for(int i = 0; i < width * height; i++) pool.add(i);
+        ArrayList<Integer> pool = new ArrayList<>(dimension.width * dimension.height);
+        for(int i = 0; i < dimension.width * dimension.height; i++) pool.add(i);
         int[] bombIndices = ranInt(pool, initNumBombs);
         Arrays.sort(bombIndices);
-        for(int i = 0, bombIndex = 0; i < width * height; i++){
+        for(int i = 0, bombIndex = 0; i < dimension.width * dimension.height; i++){
             if(i == bombIndices[bombIndex]){
                 tiles[i] = new Tile(true);
                 bombIndex++;
@@ -119,11 +119,11 @@ public class Field {
         else return tile.getIsBomb();
     }
     private Tile getTile(int x, int y){
-        if(x < 0 || x >= width - 1 || y < 0 || y >= height - 1){
+        if(x < 0 || x >= dimension.width - 1 || y < 0 || y >= dimension.height - 1){
             Debugger.warning("the requested Tile (" + x + "/" + y + ") is out of bounce");
             return null;
         }
-        return (tiles[x + y * width]);
+        return (tiles[x + y * dimension.width]);
     }
 
     private int ranInt(int min, int max) {
