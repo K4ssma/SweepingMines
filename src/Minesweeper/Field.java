@@ -3,7 +3,7 @@ package Minesweeper;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import static Minesweeper.Variables.*;
 
@@ -31,22 +31,14 @@ public class Field {
             tiles[i] = new Tile(false);
         }
         int[] mineIds = ranInt(minePool, currentDifficulty.mineNumber);
-        for(int i = 0; i < mineIds.length; i++){
-            tiles[i].isMine();
+        for(int id : mineIds){
+            tiles[id].isMine();
         }
         Debugger.info("placed mines at ids: " + Arrays.toString(mineIds));
-
-        manager.clickTile(x, y);
     }
 
-    protected boolean getIsBomb(int x, int y){
-        Tile tile = getTile(x, y);
-        if(tile == null) return false;
-        else return tile.getIsBomb();
-    }
-    private Tile getTile(int x, int y){
-        if(x < 0 || x >= currentDifficulty.dimension.width - 1 || y < 0 || y >= currentDifficulty.dimension.height - 1){
-            Debugger.warning("the requested Tile (" + x + "/" + y + ") is out of bounce");
+    protected Tile getTile(int x, int y){
+        if(x < 0 || x >= currentDifficulty.dimension.width || y < 0 || y >= currentDifficulty.dimension.height){
             return null;
         }
         return (tiles[x + y * currentDifficulty.dimension.width]);
@@ -56,7 +48,8 @@ public class Field {
         if(max + 1 - min <= 0){
             Debugger.warning("cant ask for random number between " + min + " and " + max);
         }
-        return ThreadLocalRandom.current().nextInt(min, max + 1);
+        Random rand = new Random();
+        return rand.nextInt((max + 1) - min) + min;
     }
     private int[] ranInt(ArrayList<Integer> pool, int numOfPulls){
         Debugger.info("pulling " + numOfPulls + " numbers from a pool of " + pool.size() + " numbers");

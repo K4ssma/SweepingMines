@@ -2,8 +2,10 @@ package Minesweeper;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class TileActionListener implements ActionListener {
+public class TileActionListener extends MouseAdapter implements ActionListener {
     private final int id;
     private final Gui gui;
 
@@ -14,6 +16,13 @@ public class TileActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gui.triggerField(id);
+        gui.triggerFieldAction(id);
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if(e.isAltDown()){
+            Debugger.info("RIGHT CLICK");
+        }
     }
 }

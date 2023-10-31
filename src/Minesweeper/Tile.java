@@ -14,7 +14,7 @@ public class Tile {
     protected void isMine(){
         this.mine = true;
     }
-    protected boolean getIsBomb(){
+    protected boolean getIsMine(){
         return mine;
     }
     protected void discover(){

@@ -19,7 +19,7 @@ public class Gui {
     private final JButton restartButton;
     private final JLabel bombCountLabel;
     private final  JCheckBoxMenuItem menuItemBeginner, menuItemIntermediate, menuItemExpert;
-    private final int TILEDIM = 30;
+    private final int TILEDIM = 20;
 
     protected Gui(MinesweeperManager minesweeperManager){
         Debugger.info("starting Game window");
@@ -96,7 +96,7 @@ public class Gui {
         Debugger.info("Game window started");
     }
 
-    private void initGUI(Difficulty difficulty){
+    protected void initGUI(Difficulty difficulty){
         Debugger.info("generating GUI with difficulty: " + difficulty.name);
 
         window.setVisible(false);
@@ -114,6 +114,8 @@ public class Gui {
             guiTiles[i] = new JButton();
             guiTiles[i].setPreferredSize(new Dimension(TILEDIM, TILEDIM));
             guiTiles[i].addActionListener(new TileActionListener(i, this));
+            guiTiles[i].setMargin(new Insets(0, 0, 0, 0));
+            guiTiles[i].setFocusPainted(false);
             constraints.gridx = i % difficulty.dimension.width;
             constraints.gridy = (difficulty.dimension.height - 1) - (i / difficulty.dimension.width);
             mineField.add(guiTiles[i], constraints);
@@ -139,6 +141,7 @@ public class Gui {
             }
         }
 
+        manager.reset();
         switch(difficulty.name){
             case "Beginner" ->
                 initGUI(BEGINNER);
@@ -151,14 +154,20 @@ public class Gui {
         }
     }
 
-    protected void restart(){
+    protected void discoverTile(int x, int y, int neighbourBombCount){
+        JButton tile = guiTiles[manager.coordToId(x, y)];
+        if(neighbourBombCount != 0) tile.setText(Integer.toString(neighbourBombCount));
+        tile.setBackground(new Color(50, 50, 50));
+        tile.setForeground(new Color(230, 230, 230));
+    }
+
+    protected void triggerFieldAction(int i){
+        Dimension coord = manager.idToCoord(i);
+        manager.clickTile(coord.width, coord.height);
+    }
+    protected void restartAction(){
         Debugger.info("restarting game");
         initGUI(currentDifficulty);
         manager.reset();
-    }
-
-    protected void triggerField(int i){
-        Dimension coord = manager.idToCoord(i);
-        manager.clickTile(coord.width, coord.height);
     }
 }

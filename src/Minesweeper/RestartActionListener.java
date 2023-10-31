@@ -13,6 +13,6 @@ public class RestartActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        gui.restart();
+        gui.restartAction();
     }
 }
