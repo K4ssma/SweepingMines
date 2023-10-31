@@ -6,113 +6,58 @@ import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Field {
+    private final MinesweeperManager manager;
     private final Dimension dimension;
+    private final int mineNumber;
     private final Tile[] tiles;
+    private boolean started;
 
-    protected Field(Dimension dimension, int initNumBombs){
-        Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initNumBombs);
-        this.dimension = dimension;
-        this.tiles = new Tile[dimension.width * dimension.height];
+    protected Field(MinesweeperManager minesweeperManager, Dimension dimension, int initMineNumber){
+        Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initMineNumber);
 
-        ArrayList<Integer> pool = new ArrayList<>(dimension.width * dimension.height);
-        for(int i = 0; i < dimension.width * dimension.height; i++) pool.add(i);
-        int[] bombIndices = ranInt(pool, initNumBombs);
-        Arrays.sort(bombIndices);
-        for(int i = 0, bombIndex = 0; i < dimension.width * dimension.height; i++){
-            if(i == bombIndices[bombIndex]){
-                tiles[i] = new Tile(true);
-                bombIndex++;
-            }else{
-                tiles[i] = new Tile(false);
-            }
+        this.manager = minesweeperManager;
+        if(dimension.width <= 0 || dimension.height <= 0){
+            Debugger.warning("field dimensions must be at least 1x1. chosen dimensions: " + dimension.width + "x" + dimension.height);
+            this.dimension = new Dimension(1, 1);
+        }else{
+            this.dimension = dimension;
         }
-        Debugger.info("instantiated all " + tiles.length + " tiles");
-        Debugger.info("completed Field initialization");
+        if(initMineNumber > dimension.width * dimension.height){
+            Debugger.warning("cant have more mines than tiles chosen. mine number: " + initMineNumber);
+            this.mineNumber = 0;
+        }else{
+            this.mineNumber = initMineNumber;
+        }
+
+        this.tiles = new Tile[this.dimension.width * this.dimension.height];
+        this.started = false;
+
+        Debugger.info("field setup complete");
     }
 
-    protected void discoverTile(int x,  int y){
-        Tile tile = getTile(x, y);
-        if(tile == null){
-            Debugger.warning("could not discover Tile (" + x + "/" + y + ")");
+    public void startField(int x, int y){
+        if(started){
+            Debugger.warning("cant start playing because it has already started");
             return;
         }
-        if(!tile.getDiscovered()){
-            tile.discover();
-            Debugger.info("Tile (" + x + "/" + y + ") discovered");
-        }else{
-            Debugger.info("cant discover Tile (" + x + "/" + y +") because it is already discovered");
+        Debugger.info("placing " + mineNumber + " mines");
+
+        ArrayList<Integer> minePool = new ArrayList<>(dimension.width * dimension.height - 1);
+        for(int i = 0; i < tiles.length; i++){
+            if(i != coordToId(x, y)){
+                minePool.add(i);
+            }
+            tiles[i] = new Tile(false);
         }
+        int[] mineIds = ranInt(minePool, mineNumber);
+        for(int i = 0; i < mineIds.length; i++){
+            tiles[i].isMine();
+        }
+        Debugger.info("placed mines at ids: " + Arrays.toString(mineIds));
+
+        manager.clickTile(x, y);
     }
 
-    protected void flagTile(int x, int y){
-        Tile tile = getTile(x, y);
-        if(tile == null){
-            Debugger.warning("could not change flag of Tile (" + x + "/" + y +")");
-            return;
-        }
-        if(!tile.getIsFlagged()){
-            Debugger.info("flagging Tile (" + x + "/" + y + ")");
-            tile.setFlag(true);
-        }else{
-            Debugger.info("unflagging Tile (" + x + "/" + y + ")");
-            tile.setFlag(true);
-        }
-    }
-
-    protected int getNeighbourBombCount(int x, int y){
-        Debugger.info("checking neighbour bomb number of Tile (" + x + "/" + y + ")");
-        Tile[] neighbours = getNeighbours(x, y);
-        int bombCount = 0;
-        for(Tile neighbour : neighbours){
-            if(neighbour != null && neighbour.getIsBomb()){
-                bombCount++;
-            }
-        }
-        return bombCount;
-    }
-    private Tile[] getNeighbours(int x, int y){
-        Debugger.info("getting Neighbours of Tile (" + x + "/" + y + ")");
-        Tile[] neighbours = new Tile[8];
-        int[] coord = new int[2];
-        for(int i = 0; i < 8; i++){
-            switch (i) {
-                case 0 -> {
-                    coord[0] = x;
-                    coord[1] = y + 1;
-                }
-                case 1 -> {
-                    coord[0] = x + 1;
-                    coord[1] = y + 1;
-                }
-                case 2 -> {
-                    coord[0] = x + 1;
-                    coord[1] = y;
-                }
-                case 3 -> {
-                    coord[0] = x + 1;
-                    coord[1] = y - 1;
-                }
-                case 4 -> {
-                    coord[0] = x;
-                    coord[1] = y - 1;
-                }
-                case 5 -> {
-                    coord[0] = x - 1;
-                    coord[1] = y - 1;
-                }
-                case 6 -> {
-                    coord[0] = x - 1;
-                    coord[1] = y;
-                }
-                case 7 -> {
-                    coord[0] = x - 1;
-                    coord[1] = y + 1;
-                }
-            }
-            neighbours[i] = getTile(coord[0], coord[1]);
-        }
-        return neighbours;
-    }
     protected boolean getIsBomb(int x, int y){
         Tile tile = getTile(x, y);
         if(tile == null) return false;
@@ -146,6 +91,12 @@ public class Field {
             pool.remove(numIndex);
         }
         return ranNumbers;
+    }
+    private int coordToId(int x, int y){
+        return x + (dimension.width * y);
+    }
+    private Dimension idToCoord(int id){
+        return new Dimension(id % dimension.width, id - (id % dimension.width));
     }
 }
 

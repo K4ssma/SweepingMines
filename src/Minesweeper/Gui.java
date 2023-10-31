@@ -6,6 +6,7 @@ import java.awt.*;
 
 public class Gui {
 
+    private final MinesweeperManager manager;
     private final JFrame window;
     private final GridBagLayout gridBagLayout;
     private final GridBagConstraints constraints;
@@ -23,8 +24,10 @@ public class Gui {
     private final Difficulty STANDARDDIFFICULTY = INTERMEDIATE;
     private Difficulty currentDifficulty;
 
-    protected Gui(){
+    protected Gui(MinesweeperManager minesweeperManager){
         Debugger.info("starting Game window");
+
+        this.manager = minesweeperManager;
 
         //GameWindow
         window = new JFrame("Minesweeper");
@@ -44,6 +47,7 @@ public class Gui {
 
         restartButton = new JButton("Restart");
         restartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        restartButton.addActionListener(new RestartActionListener(this));
 
         JPanel infoPanel = new JPanel();
         bombCountLabel = new JLabel();
@@ -140,11 +144,12 @@ public class Gui {
         }
     }
 
-    protected void triggerField(int i){
-
+    protected void restart(){
+        Debugger.info("restarting game");
+        initGUI(currentDifficulty);
     }
 
-    public Dimension windowSize(){
-        return window.getSize();
+    protected void triggerField(int i){
+
     }
 }
