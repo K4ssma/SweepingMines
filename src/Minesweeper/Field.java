@@ -5,51 +5,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static Minesweeper.Variables.*;
+
 public class Field {
     private final MinesweeperManager manager;
-    private final Dimension dimension;
-    private final int mineNumber;
     private final Tile[] tiles;
-    private boolean started;
 
     protected Field(MinesweeperManager minesweeperManager, Dimension dimension, int initMineNumber){
         Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initMineNumber);
 
         this.manager = minesweeperManager;
-        if(dimension.width <= 0 || dimension.height <= 0){
-            Debugger.warning("field dimensions must be at least 1x1. chosen dimensions: " + dimension.width + "x" + dimension.height);
-            this.dimension = new Dimension(1, 1);
-        }else{
-            this.dimension = dimension;
-        }
-        if(initMineNumber > dimension.width * dimension.height){
-            Debugger.warning("cant have more mines than tiles chosen. mine number: " + initMineNumber);
-            this.mineNumber = 0;
-        }else{
-            this.mineNumber = initMineNumber;
-        }
-
-        this.tiles = new Tile[this.dimension.width * this.dimension.height];
-        this.started = false;
+        this.tiles = new Tile[currentDifficulty.dimension.width * currentDifficulty.dimension.height];
 
         Debugger.info("field setup complete");
     }
 
     public void startField(int x, int y){
-        if(started){
-            Debugger.warning("cant start playing because it has already started");
-            return;
-        }
-        Debugger.info("placing " + mineNumber + " mines");
+        Debugger.info("placing " + currentDifficulty.mineNumber + " mines");
 
-        ArrayList<Integer> minePool = new ArrayList<>(dimension.width * dimension.height - 1);
+        ArrayList<Integer> minePool = new ArrayList<>(currentDifficulty.dimension.width * currentDifficulty.dimension.height - 1);
         for(int i = 0; i < tiles.length; i++){
-            if(i != coordToId(x, y)){
+            if(i != manager.coordToId(x, y)){
                 minePool.add(i);
             }
             tiles[i] = new Tile(false);
         }
-        int[] mineIds = ranInt(minePool, mineNumber);
+        int[] mineIds = ranInt(minePool, currentDifficulty.mineNumber);
         for(int i = 0; i < mineIds.length; i++){
             tiles[i].isMine();
         }
@@ -64,11 +45,11 @@ public class Field {
         else return tile.getIsBomb();
     }
     private Tile getTile(int x, int y){
-        if(x < 0 || x >= dimension.width - 1 || y < 0 || y >= dimension.height - 1){
+        if(x < 0 || x >= currentDifficulty.dimension.width - 1 || y < 0 || y >= currentDifficulty.dimension.height - 1){
             Debugger.warning("the requested Tile (" + x + "/" + y + ") is out of bounce");
             return null;
         }
-        return (tiles[x + y * dimension.width]);
+        return (tiles[x + y * currentDifficulty.dimension.width]);
     }
 
     private int ranInt(int min, int max) {
@@ -91,12 +72,6 @@ public class Field {
             pool.remove(numIndex);
         }
         return ranNumbers;
-    }
-    private int coordToId(int x, int y){
-        return x + (dimension.width * y);
-    }
-    private Dimension idToCoord(int id){
-        return new Dimension(id % dimension.width, id - (id % dimension.width));
     }
 }
 

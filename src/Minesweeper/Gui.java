@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+import static Minesweeper.Variables.*;
+
 public class Gui {
 
     private final MinesweeperManager manager;
@@ -17,12 +19,7 @@ public class Gui {
     private final JButton restartButton;
     private final JLabel bombCountLabel;
     private final  JCheckBoxMenuItem menuItemBeginner, menuItemIntermediate, menuItemExpert;
-    private final int TILEDIM = 25;
-    private final Difficulty BEGINNER = new Difficulty("Beginner", new Dimension(8, 8), 10);
-    private final Difficulty INTERMEDIATE = new Difficulty("Intermediate", new Dimension(16, 16), 40);
-    private final Difficulty EXPERT = new Difficulty("Expert", new Dimension(30, 16), 99);
-    private final Difficulty STANDARDDIFFICULTY = INTERMEDIATE;
-    private Difficulty currentDifficulty;
+    private final int TILEDIM = 30;
 
     protected Gui(MinesweeperManager minesweeperManager){
         Debugger.info("starting Game window");
@@ -44,7 +41,6 @@ public class Gui {
         constraints.weighty = 1.0;
 
         //InfoBar
-
         restartButton = new JButton("Restart");
         restartButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         restartButton.addActionListener(new RestartActionListener(this));
@@ -64,13 +60,24 @@ public class Gui {
         menuItemBeginner.addActionListener(new DifficultyActionListener(BEGINNER, this));
         difficultyMenu.add(menuItemBeginner);
 
-        menuItemIntermediate = new JCheckBoxMenuItem("Intermediate", true);
+        menuItemIntermediate = new JCheckBoxMenuItem("Intermediate", false);
         menuItemIntermediate.addActionListener(new DifficultyActionListener(INTERMEDIATE, this));
         difficultyMenu.add(menuItemIntermediate);
 
         menuItemExpert = new JCheckBoxMenuItem("Expert", false);
         menuItemExpert.addActionListener(new DifficultyActionListener(EXPERT, this));
         difficultyMenu.add(menuItemExpert);
+
+        switch(STANDARDDIFFICULTY.name){
+            case "Beginner" ->
+                menuItemBeginner.setState(true);
+            case "Intermediate" ->
+                menuItemIntermediate.setState(true);
+            case "Expert" ->
+                menuItemExpert.setState(true);
+            default ->
+                Debugger.warning("dont know what to do with current standard difficulty: " + STANDARDDIFFICULTY.name);
+        }
 
         //Adding Components to the GameWindow
         window.add(BorderLayout.NORTH, menuBar);
@@ -98,7 +105,7 @@ public class Gui {
         constraints.gridy = 0;
 
         //InfoBar
-        bombCountLabel.setText(String.valueOf(difficulty.bombNumber));
+        bombCountLabel.setText(String.valueOf(difficulty.mineNumber));
 
         //MineField
         mineField.removeAll();
@@ -108,7 +115,7 @@ public class Gui {
             guiTiles[i].setPreferredSize(new Dimension(TILEDIM, TILEDIM));
             guiTiles[i].addActionListener(new TileActionListener(i, this));
             constraints.gridx = i % difficulty.dimension.width;
-            constraints.gridy = (i - (i % difficulty.dimension.width)) + 3;
+            constraints.gridy = (difficulty.dimension.height - 1) - (i / difficulty.dimension.width);
             mineField.add(guiTiles[i], constraints);
         }
 
@@ -147,9 +154,11 @@ public class Gui {
     protected void restart(){
         Debugger.info("restarting game");
         initGUI(currentDifficulty);
+        manager.reset();
     }
 
     protected void triggerField(int i){
-
+        Dimension coord = manager.idToCoord(i);
+        manager.clickTile(coord.width, coord.height);
     }
 }
