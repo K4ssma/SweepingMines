@@ -8,29 +8,32 @@ public class SolvingManager {
     private int mineNumber;
     private TileGrid grid;
     private boolean[] needToSolveIds;
-    private GameInfo informant;
+    private final GameInterface game;
 
-    public void start(GameInfo informant){
-        int[] gridInfo = informant.getGridInfo();
+    public SolvingManager(GameInterface game){
+        this.game = game;
+    }
+
+    public void start(){
+        int[] gridInfo = game.getGridInfo();
         dimension = new Dimension(gridInfo[0], gridInfo[1]);
         mineNumber = gridInfo[2];
 
         grid = new TileGrid(dimension);
-        this.informant = informant;
 
         needToSolveIds = new boolean[dimension.width * dimension.height];
         Arrays.fill(needToSolveIds, true);
 
         if(dimension.width >= 5 && dimension.height >= 5){
-            leftClickTile(2, 2);
+            game.leftClickTile(2, 2);
         }else{
-            leftClickTile(0, 0);
+            game.leftClickTile(0, 0);
         }
         solve();
     }
     private void updateGrid(){
         int[] oldInfo = grid.getTileInfo();
-        int[] info = informant.getGridStatus();
+        int[] info = game.getGridStatus();
 
         for(int i = 0; i < info.length; i++){
             if(oldInfo[i] != info[i]){
@@ -47,19 +50,34 @@ public class SolvingManager {
         }
     }
 
-    public void solve(){
-
+    private void solve(){
+        updateGrid();
+        simpleSolve();
     }
 
     private boolean simpleSolve(){
         boolean somethingChanged = false;
 
-    }
-
-    private void leftClickTile(int x, int y){
-        //click Tile(x/y)
-    }
-    private void rightClickTile(int x, int y){
-        //right click Tile(x/y)
+        for(int i = 0; i < needToSolveIds.length; i++){
+            if(needToSolveIds[i]){
+                Tile tile = grid.getTile(i);
+                int neighbourFlags = grid.neighbourFlags(i);
+                //check if already solved
+                if(neighbourFlags == tile.getMineCount()){
+                    needToSolveIds[i] = false;
+                }else if(neighbourFlags + 1 == tile.getMineCount()){
+                    for(Tile neighbour : grid.getNeighbours(i)){
+                        if(neighbour != null && !neighbour.getIsDiscovered()){
+                            neighbour.setIsFlagged(true);
+                            Dimension coord = grid.idToCoord(i);
+                            game.rightClickTile(coord.width, coord.height);
+                        }
+                    }
+                    needToSolveIds[i] = false;
+                    somethingChanged = true;
+                }
+            }
+        }
+        return somethingChanged;
     }
 }

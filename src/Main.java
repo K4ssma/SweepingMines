@@ -3,8 +3,6 @@ import MinewseeperSolver.SolvingManager;
 
 public class Main {
     public static void main(String[] args) {
-        MinesweeperManager game = new MinesweeperManager();
-        SolvingManager solver = new SolvingManager();
     }
 }
 

@@ -21,7 +21,7 @@ public class TileActionListener extends MouseAdapter {
 
         Dimension coord = manager.idToCoord(id);
         if(e.getButton() == MouseEvent.BUTTON1){
-            manager.clickTile(coord.width, coord.height);
+            manager.leftClickTile(coord.width, coord.height);
         }else if(e.getButton() == MouseEvent.BUTTON3){
             manager.rightClickTile(coord.width, coord.height);
         }

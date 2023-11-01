@@ -24,7 +24,7 @@ public class MinesweeperManager{
         mineField.startField(x, y);
         started = true;
         remainingTiles = currentDifficulty.dimension.width * currentDifficulty.dimension.height;
-        clickTile(x, y);
+        leftClickTile(x, y);
     }
     protected void reset(){
         Debugger.info("resetting game");
@@ -57,7 +57,7 @@ public class MinesweeperManager{
         return won;
     }
 
-    public void clickTile(int x, int y){
+    public void leftClickTile(int x, int y){
         if(!started){
             start(x, y);
             return;
@@ -84,14 +84,14 @@ public class MinesweeperManager{
         int bombCount = getNeighbourBombCount(x, y);
         gui.discoverTile(x, y, bombCount);
         if(bombCount == 0){
-            clickTile(x, y + 1);
-            clickTile(x + 1, y + 1);
-            clickTile(x + 1, y);
-            clickTile(x + 1, y - 1);
-            clickTile(x, y - 1);
-            clickTile(x - 1, y - 1);
-            clickTile(x - 1, y);
-            clickTile(x - 1, y + 1);
+            leftClickTile(x, y + 1);
+            leftClickTile(x + 1, y + 1);
+            leftClickTile(x + 1, y);
+            leftClickTile(x + 1, y - 1);
+            leftClickTile(x, y - 1);
+            leftClickTile(x - 1, y - 1);
+            leftClickTile(x - 1, y);
+            leftClickTile(x - 1, y + 1);
         }
     }
     private void victory(){
@@ -114,6 +114,9 @@ public class MinesweeperManager{
             tile.setFlag(true);
             gui.setFlag(x, y, true);
         }
+    }
+    public void restartGame(){
+        gui.restartAction();
     }
 
     private Tile[] getNeighbours(int x, int y){

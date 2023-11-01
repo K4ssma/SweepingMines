@@ -1,7 +1,7 @@
 import MinesweeperGame.MinesweeperManager;
-import MinewseeperSolver.GameInfo;
+import MinewseeperSolver.GameInterface;
 
-public class MinesweeperInformant extends MinesweeperManager implements GameInfo {
+public class Game extends MinesweeperManager implements GameInterface {
     @Override
     public int[] getGridInfo() {
         return super.getGridInfo();
