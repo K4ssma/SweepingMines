@@ -28,7 +28,7 @@ public class Field {
             if(i != manager.coordToId(x, y)){
                 minePool.add(i);
             }
-            tiles[i] = new Tile(false);
+            tiles[i] = new Tile();
         }
         int[] mineIds = ranInt(minePool, currentDifficulty.mineNumber);
         for(int id : mineIds){
@@ -44,12 +44,12 @@ public class Field {
         return (tiles[x + y * currentDifficulty.dimension.width]);
     }
 
-    private int ranInt(int min, int max) {
-        if(max + 1 - min <= 0){
-            Debugger.warning("cant ask for random number between " + min + " and " + max);
+    private int ranInt(int max) {
+        if(max + 1 <= 0){
+            Debugger.warning("cant ask for random number between " + 0 + " and " + max);
         }
         Random rand = new Random();
-        return rand.nextInt((max + 1) - min) + min;
+        return rand.nextInt(max + 1);
     }
     private int[] ranInt(ArrayList<Integer> pool, int numOfPulls){
         Debugger.info("pulling " + numOfPulls + " numbers from a pool of " + pool.size() + " numbers");
@@ -60,7 +60,7 @@ public class Field {
 
         int[] ranNumbers = new int[numOfPulls];
         for(int i = 0, numIndex; i < numOfPulls; i++){
-            numIndex = ranInt(0, pool.size() - 1);
+            numIndex = ranInt(pool.size() - 1);
             ranNumbers[i] = pool.get(numIndex);
             pool.remove(numIndex);
         }

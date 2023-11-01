@@ -5,7 +5,7 @@ public class Tile {
     private boolean isDiscovered;
     private boolean isFlagged;
 
-    protected Tile(boolean isMine){
+    protected Tile(){
         this.mine = false;
         isDiscovered = false;
         isFlagged = false;

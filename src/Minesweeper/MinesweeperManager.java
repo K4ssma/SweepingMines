@@ -39,15 +39,9 @@ public class MinesweeperManager {
         if(tile == null){
             Debugger.info("clicked tile is null");
             return;
-        }
-
-        if(tile.getIsFlagged()){
-            Debugger.info("cant click flagged tiles");
-            return;
-        }
+        }else if(tile.getIsFlagged()) return;
 
         if(tile.getDiscovered()) {
-            Debugger.info("tile already discovered");
             return;
         }else if(tile.getIsMine()){
             Debugger.info("Game Over");

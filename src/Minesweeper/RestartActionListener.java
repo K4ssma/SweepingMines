@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 public class RestartActionListener implements ActionListener {
 
-    private Gui gui;
+    private final Gui gui;
 
     protected RestartActionListener(Gui gui){
         this.gui = gui;
