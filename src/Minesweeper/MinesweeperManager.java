@@ -40,6 +40,11 @@ public class MinesweeperManager {
             return;
         }
 
+        if(tile.getIsFlagged()){
+            Debugger.info("cant click flagged tiles");
+            return;
+        }
+
         if(tile.getDiscovered()) {
             Debugger.info("tile already discovered");
             return;
@@ -62,6 +67,21 @@ public class MinesweeperManager {
             clickTile(x - 1, y - 1);
             clickTile(x - 1, y);
             clickTile(x - 1, y + 1);
+        }
+    }
+
+    public void rightClickTile(int x, int y){
+        if(!started) return;
+        Tile tile = mineField.getTile(x, y);
+        if(tile.getDiscovered()) return;
+
+        if(tile.getIsFlagged()){
+            tile.setFlag(false);
+            gui.setFlag(x, y, false);
+        }
+        else{
+            tile.setFlag(true);
+            gui.setFlag(x, y, true);
         }
     }
 

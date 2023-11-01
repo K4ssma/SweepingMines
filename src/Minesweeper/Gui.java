@@ -17,9 +17,10 @@ public class Gui {
     private final JPanel mineField;
     private JButton[] guiTiles;
     private final JButton restartButton;
-    private final JLabel bombCountLabel;
+    private final JLabel mineCountLabel;
     private final  JCheckBoxMenuItem menuItemBeginner, menuItemIntermediate, menuItemExpert;
     private final int TILEDIM = 20;
+    private int currentMines;
 
     protected Gui(MinesweeperManager minesweeperManager){
         Debugger.info("starting Game window");
@@ -46,9 +47,9 @@ public class Gui {
         restartButton.addActionListener(new RestartActionListener(this));
 
         JPanel infoPanel = new JPanel();
-        bombCountLabel = new JLabel();
+        mineCountLabel = new JLabel();
         JLabel bombsRemainingLabel = new JLabel("Mines Remaining");
-        infoPanel.add(bombCountLabel);
+        infoPanel.add(mineCountLabel);
         infoPanel.add(bombsRemainingLabel);
 
         //MenuBar
@@ -105,7 +106,8 @@ public class Gui {
         constraints.gridy = 0;
 
         //InfoBar
-        bombCountLabel.setText(String.valueOf(difficulty.mineNumber));
+        currentMines = difficulty.mineNumber;
+        mineCountLabel.setText(String.valueOf(currentMines));
 
         //MineField
         mineField.removeAll();
@@ -113,9 +115,10 @@ public class Gui {
         for(int i = 0; i < guiTiles.length; i++){
             guiTiles[i] = new JButton();
             guiTiles[i].setPreferredSize(new Dimension(TILEDIM, TILEDIM));
-            guiTiles[i].addActionListener(new TileActionListener(i, this));
+            guiTiles[i].addMouseListener(new TileActionListener(i, manager));
             guiTiles[i].setMargin(new Insets(0, 0, 0, 0));
             guiTiles[i].setFocusPainted(false);
+            guiTiles[i].setBackground(Color.LIGHT_GRAY);
             constraints.gridx = i % difficulty.dimension.width;
             constraints.gridy = (difficulty.dimension.height - 1) - (i / difficulty.dimension.width);
             mineField.add(guiTiles[i], constraints);
@@ -160,11 +163,17 @@ public class Gui {
         tile.setBackground(new Color(50, 50, 50));
         tile.setForeground(new Color(230, 230, 230));
     }
-
-    protected void triggerFieldAction(int i){
-        Dimension coord = manager.idToCoord(i);
-        manager.clickTile(coord.width, coord.height);
+    protected void setFlag(int x, int y, boolean flag){
+        if(flag){
+            guiTiles[manager.coordToId(x, y)].setBackground(Color.RED);
+            currentMines--;
+        }else{
+            guiTiles[manager.coordToId(x, y)].setBackground(Color.LIGHT_GRAY);
+            currentMines++;
+        }
+        mineCountLabel.setText(Integer.toString(currentMines));
     }
+
     protected void restartAction(){
         Debugger.info("restarting game");
         initGUI(currentDifficulty);
