@@ -29,4 +29,8 @@ public class Tile {
     protected int getMineCount(){
         return mineCount;
     }
+
+    protected int getId(){
+        return id;
+    }
 }

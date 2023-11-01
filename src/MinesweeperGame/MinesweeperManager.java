@@ -1,5 +1,7 @@
 package MinesweeperGame;
 
+import DebugPackage.Debugger;
+
 import java.awt.*;
 
 import static MinesweeperGame.Variables.*;
@@ -65,7 +67,6 @@ public class MinesweeperManager{
 
         Tile tile = mineField.getTile(x, y);
         if(tile == null){
-            DebugPackage.Debugger.info("clicked tile is null");
             return;
         }else if(tile.getIsFlagged()) return;
 
@@ -73,8 +74,7 @@ public class MinesweeperManager{
             return;
         }else if(tile.getIsMine()){
             DebugPackage.Debugger.info("Game Over");
-            gui.initGUI(currentDifficulty);
-            reset();
+            gui.explodeMine(x, y);
             return;
         }
 
@@ -96,7 +96,7 @@ public class MinesweeperManager{
     }
     private void victory(){
         won = true;
-        DebugPackage.Debugger.info("VICTORY");
+        Debugger.info("solved Grid");
     }
 
     public void rightClickTile(int x, int y){

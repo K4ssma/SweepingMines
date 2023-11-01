@@ -132,7 +132,7 @@ public class Gui {
     }
 
     protected void changeDifficulty(Difficulty difficulty){
-        DebugPackage.Debugger.info("changing the difficulty from: " + currentDifficulty + " to " + difficulty.name);
+        DebugPackage.Debugger.info("changing the difficulty from: " + currentDifficulty.name + " to " + difficulty.name);
 
         switch(currentDifficulty.name){
             case "Beginner" -> menuItemBeginner.setState(false);
@@ -172,6 +172,9 @@ public class Gui {
             currentMines++;
         }
         mineCountLabel.setText(Integer.toString(currentMines));
+    }
+    protected void explodeMine(int x, int y){
+        guiTiles[manager.coordToId(x, y)].setBackground(Color.MAGENTA);
     }
 
     protected void restartAction(){

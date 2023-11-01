@@ -24,7 +24,7 @@ public class SolvingManager {
         grid = new TileGrid(dimension);
 
         needToSolveIds = new boolean[dimension.width * dimension.height];
-        Arrays.fill(needToSolveIds, true);
+        Arrays.fill(needToSolveIds, false);
 
         if(dimension.width >= 5 && dimension.height >= 5){
             game.leftClickTile(2, 2);
@@ -46,17 +46,31 @@ public class SolvingManager {
                 }else if(info[i] == 0){
                     tile.discover(0);
                 }else{
-                    tile.discover(i);
+                    tile.discover(info[i]);
                     needToSolveIds[i] = true;
                 }
             }
         }
     }
 
-    private void solve(){
+    public void solve(){
         Debugger.info("solving");
-        updateGrid();
-        simpleSolve();
+
+        boolean changed = true;
+        while(!game.getIsWon() && changed){
+            updateGrid();
+            changed = simpleSolve();
+        }
+
+        if(game.getIsWon()){
+            while(changed){
+                updateGrid();
+                changed = simpleSolve();
+            }
+            Debugger.info("VICTORY");
+        }else {
+            Debugger.warning("unable to solve more tiles");
+        }
     }
 
     private boolean simpleSolve(){
@@ -65,17 +79,48 @@ public class SolvingManager {
 
         for(int i = 0; i < needToSolveIds.length; i++){
             if(needToSolveIds[i]){
+
                 Tile tile = grid.getTile(i);
                 int neighbourFlags = grid.neighbourFlags(i);
+                int undiscoveredNeighbours = grid.undiscoveredNeighbours(i);
+
+                Debugger.info("trying to solve: (" + grid.idToCoord(i).width + "/" + grid.idToCoord(i).height + ")");
+                Debugger.info("neighbouring flags: " + neighbourFlags);
+                Debugger.info("undiscovered neighbours: " + undiscoveredNeighbours);
+                Debugger.info("mines: " + tile.getMineCount());
+
                 //check if already solved
-                if(neighbourFlags == tile.getMineCount()){
+                if(neighbourFlags == tile.getMineCount() && undiscoveredNeighbours - neighbourFlags == 0){
+                    Debugger.info("nothing to do, marking tile as solved");
                     needToSolveIds[i] = false;
-                }else if(neighbourFlags + 1 == tile.getMineCount()){
+                }
+
+                //check if remaining neighbours is equal to remaining mines
+                else if(undiscoveredNeighbours - neighbourFlags == tile.getMineCount() - neighbourFlags){
+                    Debugger.info("placing flags at neighbours");
                     for(Tile neighbour : grid.getNeighbours(i)){
-                        if(neighbour != null && !neighbour.getIsDiscovered()){
+                        if(neighbour != null && !neighbour.getIsDiscovered() && !neighbour.getIsFlagged()){
+
                             neighbour.setIsFlagged(true);
-                            Dimension coord = grid.idToCoord(i);
+                            Dimension coord = grid.idToCoord(neighbour.getId());
+                            Debugger.info("placing flag at: (" + coord.width + "/" + coord.height + ")");
                             game.rightClickTile(coord.width, coord.height);
+
+                        }
+                    }
+                    needToSolveIds[i] = false;
+                    somethingChanged = true;
+                }
+
+                //check if no mine on neighbours is left
+                else if(tile.getMineCount() - neighbourFlags == 0){
+                    Debugger.info("no mines left");
+                    for(Tile neighbour : grid.getNeighbours(i)){
+                        if(neighbour != null && !neighbour.getIsFlagged() && !neighbour.getIsDiscovered()){
+                            Dimension coord = grid.idToCoord(neighbour.getId());
+                            Debugger.info("clicking (" + coord.width + "/" + coord.height + ")");
+                            Debugger.info("neighbour id: " + neighbour.getId());
+                            game.leftClickTile(coord.width, coord.height);
                         }
                     }
                     needToSolveIds[i] = false;

@@ -15,10 +15,13 @@ public class TileGrid {
     }
 
     protected Tile getTile(int id){
-        if(id >= tiles.length) return null;
+        if(id >= tiles.length || id < 0) return null;
         return tiles[id];
     }
     protected Tile getTile(int x, int y){
+        if(x >= dimension.width || y >= dimension.height || x < 0 || y < 0){
+            return null;
+        }
         return getTile(coordToId(x, y));
     }
     protected int[] getTileInfo(){
@@ -62,6 +65,19 @@ public class TileGrid {
     protected int neighbourFlags(int id){
         Dimension coord = idToCoord(id);
         return neighbourFlags(coord.width, coord.height);
+    }
+
+    protected int undiscoveredNeighbours(int x, int y){
+        int counter = 0;
+        for(Tile neighbour : getNeighbours(x, y)){
+            if(neighbour != null && !neighbour.getIsDiscovered()){
+                counter++;
+            }
+        }
+        return counter;
+    }
+    protected int undiscoveredNeighbours(int id){
+        return undiscoveredNeighbours(idToCoord(id).width, idToCoord(id).height);
     }
 
     protected Dimension idToCoord(int id){
