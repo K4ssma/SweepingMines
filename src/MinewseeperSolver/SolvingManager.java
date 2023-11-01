@@ -1,11 +1,12 @@
 package MinewseeperSolver;
 
+import DebugPackage.Debugger;
+
 import java.awt.*;
 import java.util.Arrays;
 
 public class SolvingManager {
     private Dimension dimension;
-    private int mineNumber;
     private TileGrid grid;
     private boolean[] needToSolveIds;
     private final GameInterface game;
@@ -15,9 +16,10 @@ public class SolvingManager {
     }
 
     public void start(){
+        Debugger.info("started solver");
+
         int[] gridInfo = game.getGridInfo();
         dimension = new Dimension(gridInfo[0], gridInfo[1]);
-        mineNumber = gridInfo[2];
 
         grid = new TileGrid(dimension);
 
@@ -32,6 +34,7 @@ public class SolvingManager {
         solve();
     }
     private void updateGrid(){
+        Debugger.info("grid getting updated");
         int[] oldInfo = grid.getTileInfo();
         int[] info = game.getGridStatus();
 
@@ -51,11 +54,13 @@ public class SolvingManager {
     }
 
     private void solve(){
+        Debugger.info("solving");
         updateGrid();
         simpleSolve();
     }
 
     private boolean simpleSolve(){
+        Debugger.info("simple solve");
         boolean somethingChanged = false;
 
         for(int i = 0; i < needToSolveIds.length; i++){

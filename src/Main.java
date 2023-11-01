@@ -1,7 +1,9 @@
-import MinesweeperGame.MinesweeperManager;
-import MinewseeperSolver.SolvingManager;
+import DebugPackage.*;
 
 public class Main {
+
+    private Debugger debugger;
+
     public static void main(String[] args) {
     }
 }

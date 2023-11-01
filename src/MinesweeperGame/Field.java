@@ -12,16 +12,16 @@ public class Field {
     private final Tile[] tiles;
 
     protected Field(MinesweeperManager minesweeperManager, Dimension dimension, int initMineNumber){
-        Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initMineNumber);
+        DebugPackage.Debugger.info("creating new field dimension: " + dimension.width + "x" + dimension.height + " number of Bombs: " + initMineNumber);
 
         this.manager = minesweeperManager;
         this.tiles = new Tile[currentDifficulty.dimension.width * currentDifficulty.dimension.height];
 
-        Debugger.info("field setup complete");
+        DebugPackage.Debugger.info("field setup complete");
     }
 
     public void startField(int x, int y){
-        Debugger.info("placing " + currentDifficulty.mineNumber + " mines");
+        DebugPackage.Debugger.info("placing " + currentDifficulty.mineNumber + " mines");
 
         ArrayList<Integer> minePool = new ArrayList<>(currentDifficulty.dimension.width * currentDifficulty.dimension.height - 1);
         for(int i = 0; i < tiles.length; i++){
@@ -34,7 +34,7 @@ public class Field {
         for(int id : mineIds){
             tiles[id].isMine();
         }
-        Debugger.info("placed mines at ids: " + Arrays.toString(mineIds));
+        DebugPackage.Debugger.info("placed mines at ids: " + Arrays.toString(mineIds));
     }
 
     protected Tile getTile(int x, int y){
@@ -46,15 +46,15 @@ public class Field {
 
     private int ranInt(int max) {
         if(max + 1 <= 0){
-            Debugger.warning("cant ask for random number between " + 0 + " and " + max);
+            DebugPackage.Debugger.warning("cant ask for random number between " + 0 + " and " + max);
         }
         Random rand = new Random();
         return rand.nextInt(max + 1);
     }
     private int[] ranInt(ArrayList<Integer> pool, int numOfPulls){
-        Debugger.info("pulling " + numOfPulls + " numbers from a pool of " + pool.size() + " numbers");
+        DebugPackage.Debugger.info("pulling " + numOfPulls + " numbers from a pool of " + pool.size() + " numbers");
         if(numOfPulls > pool.size()){
-            Debugger.warning("cant ask for more numbers than there are in the pool pool size: " + pool.size() + " pulls: " + numOfPulls);
+            DebugPackage.Debugger.warning("cant ask for more numbers than there are in the pool pool size: " + pool.size() + " pulls: " + numOfPulls);
             throw new IllegalArgumentException("more pull requests than numbers in the pool");
         }
 

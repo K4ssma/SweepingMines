@@ -19,7 +19,7 @@ public class MinesweeperManager{
     }
 
     private void start(int x, int y){
-        Debugger.info("starting game");
+        DebugPackage.Debugger.info("starting game");
         mineField = new Field(this, currentDifficulty.dimension, currentDifficulty.mineNumber);
         mineField.startField(x, y);
         started = true;
@@ -27,7 +27,7 @@ public class MinesweeperManager{
         leftClickTile(x, y);
     }
     protected void reset(){
-        Debugger.info("resetting game");
+        DebugPackage.Debugger.info("resetting game");
         mineField = null;
         started = false;
         won = false;
@@ -65,14 +65,14 @@ public class MinesweeperManager{
 
         Tile tile = mineField.getTile(x, y);
         if(tile == null){
-            Debugger.info("clicked tile is null");
+            DebugPackage.Debugger.info("clicked tile is null");
             return;
         }else if(tile.getIsFlagged()) return;
 
         if(tile.getDiscovered()) {
             return;
         }else if(tile.getIsMine()){
-            Debugger.info("Game Over");
+            DebugPackage.Debugger.info("Game Over");
             gui.initGUI(currentDifficulty);
             reset();
             return;
@@ -96,7 +96,7 @@ public class MinesweeperManager{
     }
     private void victory(){
         won = true;
-        Debugger.info("VICTORY");
+        DebugPackage.Debugger.info("VICTORY");
     }
 
     public void rightClickTile(int x, int y){

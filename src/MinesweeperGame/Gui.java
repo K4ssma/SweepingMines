@@ -23,7 +23,7 @@ public class Gui {
     private int currentMines;
 
     protected Gui(MinesweeperManager minesweeperManager){
-        Debugger.info("starting Game window");
+        DebugPackage.Debugger.info("starting Game window");
 
         this.manager = minesweeperManager;
 
@@ -77,7 +77,7 @@ public class Gui {
             case "Expert" ->
                 menuItemExpert.setState(true);
             default ->
-                Debugger.warning("dont know what to do with current standard difficulty: " + STANDARDDIFFICULTY.name);
+                DebugPackage.Debugger.warning("dont know what to do with current standard difficulty: " + STANDARDDIFFICULTY.name);
         }
 
         //Adding Components to the GameWindow
@@ -94,11 +94,11 @@ public class Gui {
 
         window.pack();
         window.setVisible(true);
-        Debugger.info("Game window started");
+        DebugPackage.Debugger.info("Game window started");
     }
 
     protected void initGUI(Difficulty difficulty){
-        Debugger.info("generating GUI with difficulty: " + difficulty.name);
+        DebugPackage.Debugger.info("generating GUI with difficulty: " + difficulty.name);
 
         window.setVisible(false);
         GridBagConstraints constraints = new GridBagConstraints();
@@ -128,18 +128,18 @@ public class Gui {
         window.pack();
         window.setVisible(true);
 
-        Debugger.info("GUI updated");
+        DebugPackage.Debugger.info("GUI updated");
     }
 
     protected void changeDifficulty(Difficulty difficulty){
-        Debugger.info("changing the difficulty from: " + currentDifficulty + " to " + difficulty.name);
+        DebugPackage.Debugger.info("changing the difficulty from: " + currentDifficulty + " to " + difficulty.name);
 
         switch(currentDifficulty.name){
             case "Beginner" -> menuItemBeginner.setState(false);
             case "Intermediate" -> menuItemIntermediate.setState(false);
             case "Expert" -> menuItemExpert.setState(false);
             default -> {
-                Debugger.warning("dont know how to change away from current difficulty: " + currentDifficulty.name);
+                DebugPackage.Debugger.warning("dont know how to change away from current difficulty: " + currentDifficulty.name);
                 return;
             }
         }
@@ -153,7 +153,7 @@ public class Gui {
             case "Expert" ->
                 initGUI(EXPERT);
             default ->
-                Debugger.warning("couldnt find difficulty with name: " + difficulty.name);
+                DebugPackage.Debugger.warning("couldnt find difficulty with name: " + difficulty.name);
         }
     }
 
@@ -175,7 +175,7 @@ public class Gui {
     }
 
     protected void restartAction(){
-        Debugger.info("restarting game");
+        DebugPackage.Debugger.info("restarting game");
         initGUI(currentDifficulty);
         manager.reset();
     }
