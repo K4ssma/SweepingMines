@@ -1,4 +1,4 @@
-package Minesweeper;
+package MinesweeperGame;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

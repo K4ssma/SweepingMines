@@ -1,10 +1,10 @@
-package Minesweeper;
+package MinesweeperGame;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
-import static Minesweeper.Variables.*;
+import static MinesweeperGame.Variables.*;
 
 public class Gui {
 
@@ -28,7 +28,7 @@ public class Gui {
         this.manager = minesweeperManager;
 
         //GameWindow
-        window = new JFrame("Minesweeper");
+        window = new JFrame("MinesweeperGame");
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mineField = new JPanel();
         mineField.setBorder(new EmptyBorder(0, 5, 5, 5));

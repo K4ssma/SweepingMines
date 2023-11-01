@@ -1,11 +1,11 @@
-package Minesweeper;
+package MinesweeperGame;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import static Minesweeper.Variables.*;
+import static MinesweeperGame.Variables.*;
 
 public class Field {
     private final MinesweeperManager manager;

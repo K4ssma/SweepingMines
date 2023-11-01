@@ -1,4 +1,4 @@
-package Minesweeper;
+package MinesweeperGame;
 
 public class Debugger {
     public static boolean showInfoDebug = true;

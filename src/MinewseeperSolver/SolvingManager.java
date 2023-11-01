@@ -4,20 +4,24 @@ import java.awt.*;
 import java.util.Arrays;
 
 public class SolvingManager {
-    private final Dimension DIM = new Dimension(16, 16);
-    private int[] info;
+    private Dimension dimension;
+    private int mineNumber;
     private TileGrid grid;
     private boolean[] needToSolveIds;
+    private GameInfo informant;
 
-    public void start(){
-        //get GridInfo
-        info = new int[DIM.width * DIM.height];
-        grid = new TileGrid(DIM);
+    public void start(GameInfo informant){
+        int[] gridInfo = informant.getGridInfo();
+        dimension = new Dimension(gridInfo[0], gridInfo[1]);
+        mineNumber = gridInfo[2];
 
-        needToSolveIds = new boolean[DIM.width * DIM.height];
-        Arrays.fill(needToSolveIds, false);
+        grid = new TileGrid(dimension);
+        this.informant = informant;
 
-        if(DIM.width >= 5 && DIM.height >= 5){
+        needToSolveIds = new boolean[dimension.width * dimension.height];
+        Arrays.fill(needToSolveIds, true);
+
+        if(dimension.width >= 5 && dimension.height >= 5){
             leftClickTile(2, 2);
         }else{
             leftClickTile(0, 0);
@@ -25,7 +29,22 @@ public class SolvingManager {
         solve();
     }
     private void updateGrid(){
-        //get GridStatus
+        int[] oldInfo = grid.getTileInfo();
+        int[] info = informant.getGridStatus();
+
+        for(int i = 0; i < info.length; i++){
+            if(oldInfo[i] != info[i]){
+                Tile tile = grid.getTile(i);
+                if(info[i] == -2){
+                    tile.setIsFlagged(true);
+                }else if(info[i] == 0){
+                    tile.discover(0);
+                }else{
+                    tile.discover(i);
+                    needToSolveIds[i] = true;
+                }
+            }
+        }
     }
 
     public void solve(){

@@ -11,20 +11,21 @@ public class Tile {
         this.isFlagged = false;
     }
 
-    protected void discover(){
+    protected void discover(int mineCount){
         isDiscovered = true;
+        this.mineCount = mineCount;
+    }
+    protected boolean getIsDiscovered(){
+        return isDiscovered;
     }
 
     protected void setIsFlagged(boolean isFlagged){
         this.isFlagged = isFlagged;
     }
-    protected boolean getIsStatus(){
+    protected boolean getIsFlagged(){
         return isFlagged;
     }
 
-    protected void setMineCount(int mineCount){
-        this.mineCount = mineCount;
-    }
     protected int getMineCount(){
         return mineCount;
     }

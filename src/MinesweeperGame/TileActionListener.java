@@ -1,4 +1,4 @@
-package Minesweeper;
+package MinesweeperGame;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

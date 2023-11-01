@@ -1,10 +1,10 @@
-package Minesweeper;
+package MinesweeperGame;
 
 import java.awt.*;
 
-import static Minesweeper.Variables.*;
+import static MinesweeperGame.Variables.*;
 
-public class MinesweeperManager {
+public class MinesweeperManager{
     private boolean started;
     private final Gui gui;
     private Field mineField;
@@ -36,9 +36,6 @@ public class MinesweeperManager {
     public int[] getGridInfo(){
         return new int[]{currentDifficulty.dimension.width, currentDifficulty.dimension.height, currentDifficulty.mineNumber};
     }
-    public boolean getIsWon(){
-        return won;
-    }
     public int[] getGridStatus(){
         if(!started) return null;
 
@@ -55,6 +52,9 @@ public class MinesweeperManager {
             }
         }
         return status;
+    }
+    public boolean getIsWon(){
+        return won;
     }
 
     public void clickTile(int x, int y){

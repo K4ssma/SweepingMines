@@ -1,4 +1,4 @@
-package Minesweeper;
+package MinesweeperGame;
 
 public class Tile {
     private boolean mine;
