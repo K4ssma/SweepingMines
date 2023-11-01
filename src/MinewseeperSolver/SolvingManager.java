@@ -3,6 +3,7 @@ package MinewseeperSolver;
 import DebugPackage.Debugger;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class SolvingManager {
@@ -129,5 +130,83 @@ public class SolvingManager {
             }
         }
         return somethingChanged;
+    }
+
+    private boolean advancedSolve(){
+        Debugger.info("advanced solve");
+        boolean changed = false;
+
+        for(int i = 0; i < needToSolveIds.length; i++){
+            if(needToSolveIds[i]){
+
+                //1 check if one tile shares all its undiscovered neighbours with one of his unsolved neighbours
+
+                Tile[] neighbours = grid.getNeighbours(i);
+
+                //1.1 get the undiscovered and unflagged neighbours
+                ArrayList<Integer> validNeighbourIds = new ArrayList<>();
+                for(Tile neighbour : neighbours){
+                    if(!neighbour.getIsFlagged() && !neighbour.getIsDiscovered()){
+                        validNeighbourIds.add(neighbour.getId());
+                    }
+                }
+
+                //1.2 compare them to all neighbours
+                for(Tile neighbour : neighbours){
+
+                    //1.2.1 getting the valid neighbours neighbour ids
+                    ArrayList<Integer> validNeighboursNeighbourIds = new ArrayList<>();
+                    for(Tile neighboursneighbour : grid.getNeighbours(neighbour.getId())){
+                        if(!neighboursneighbour.getIsFlagged() && !neighboursneighbour.getIsDiscovered()){
+                            validNeighboursNeighbourIds.add(neighboursneighbour.getId());
+                        }
+                    }
+
+                    //1.2.2 comparing neighbour to origin tile
+                    ArrayList<Integer> foundCommonNeighboursIds = new ArrayList<>();
+                    ArrayList<Integer> unsharedNeighboursIds = new ArrayList<>();
+                    for(int neighboursNeighbourId : validNeighboursNeighbourIds){
+                        boolean found = false;
+                        for(int neighbourId : validNeighbourIds){
+                            if(neighboursNeighbourId == neighbourId){
+                                found = true;
+                            }
+                        }
+                        if(found){
+                            foundCommonNeighboursIds.add(neighboursNeighbourId);
+                        }else{
+                            unsharedNeighboursIds.add(neighboursNeighbourId);
+                        }
+                    }
+                    if(foundCommonNeighboursIds.size() == validNeighbourIds.size()){
+
+                        //found all valid tiles that are shared with one of its neighbours
+                        //1.3 checking if the shared mines from the origin tile say something about the neighbours unshared tiles
+
+                        //1.3.1 case 1 there cant be any mines on the remaining tile
+                        if((neighbour.getMineCount() - grid.neighbourFlags(neighbour.getId()))
+                                - (grid.getTile(i).getMineCount() - grid.neighbourFlags(i)) == 0){
+                            Dimension coord = grid.idToCoord(neighbour.getId());
+                            Debugger.info("clicking unshared neighbours of (" + coord.width + "/" + coord.height + ")");
+                            for(int unsharedNeighbour : unsharedNeighboursIds){
+                                game.leftClickTile(grid.idToCoord(unsharedNeighbour).width, grid.idToCoord(unsharedNeighbour).height);
+                                changed = true;
+                            }
+                        }
+                        //1.3.2 case 2 there are remaining mines equal to the unshared mines
+                        else if(validNeighboursNeighbourIds.size() == (neighbour.getMineCount() - grid.neighbourFlags(neighbour.getId()))
+                                - (grid.getTile(i).getMineCount() - grid.neighbourFlags(i))){
+                            for(int unsharedTiles : unsharedNeighboursIds){
+                                game.leftClickTile(grid.idToCoord(unsharedTiles).width, grid.idToCoord(unsharedTiles).height);
+                                changed = true;
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return changed;
     }
 }
