@@ -8,6 +8,7 @@ public class MinesweeperManager {
     private boolean started;
     private final Gui gui;
     private Field mineField;
+    private int remainingTiles;
 
     public MinesweeperManager(){
         currentDifficulty = STANDARDDIFFICULTY;
@@ -20,6 +21,7 @@ public class MinesweeperManager {
         mineField = new Field(this, currentDifficulty.dimension, currentDifficulty.mineNumber);
         mineField.startField(x, y);
         started = true;
+        remainingTiles = currentDifficulty.dimension.width * currentDifficulty.dimension.height;
         clickTile(x, y);
     }
     protected void reset(){
@@ -29,7 +31,6 @@ public class MinesweeperManager {
     }
 
     public void clickTile(int x, int y){
-        Debugger.info("tile: (" + x + "/" + y + ") got left-clicked id: " + coordToId(x, y));
         if(!started){
             start(x, y);
             return;
@@ -56,6 +57,8 @@ public class MinesweeperManager {
         }
 
         tile.discover();
+        remainingTiles--;
+        if(remainingTiles == currentDifficulty.mineNumber) Debugger.info("VICTORY");
         int bombCount = getNeighbourBombCount(x, y);
         gui.discoverTile(x, y, bombCount);
         if(bombCount == 0){
