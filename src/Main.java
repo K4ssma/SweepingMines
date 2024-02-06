@@ -9,11 +9,20 @@ public class Main {
 
         Scanner scanner = new Scanner(System.in);
         int i = scanner.nextInt();
-        while(i != 2){
-            if(i == 0){
-                solver.start();
-            }else if(i == 1){
-                solver.solve();
+        while(i >= 0){
+
+            switch(i){
+                case 0:
+                    solver.solve();
+                    break;
+                case 1:
+                    solver.onlyTrySimpleSolve();
+                    break;
+                case 2:
+                    solver.onlyTryAdvancedSolve();
+                    break;
+                default:
+                    break;
             }
 
             i = scanner.nextInt();

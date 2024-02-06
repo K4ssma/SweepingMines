@@ -63,7 +63,7 @@ public class MinesweeperManager{
         if(!started){
             start(x, y);
             return;
-        }else if(won) return;
+        }
 
         Tile tile = mineField.getTile(x, y);
         if(tile == null){
@@ -101,7 +101,6 @@ public class MinesweeperManager{
 
     public void rightClickTile(int x, int y){
         if(!started) return;
-        else if(won) return;
 
         Tile tile = mineField.getTile(x, y);
         if(tile.getDiscovered()) return;
